@@ -21,12 +21,11 @@ Dimension 3: Articulation (1 denotes the note was played at the given timestep),
 # Gather the training pieces from the specified directories
 # Converts the pieces from noteStateMatrix to the biaxialInputFormat
 training_set, testing_set = utility.loadPianoPieces()
-scales = utility.loadScales()   
 
 tf.reset_default_graph()
 
 num_notes = 78
-X = tf.variable(float, [None, None, num_notes])
+X = tf.variable(float, [None, 1, num_notes, None])
 
 
 z = model.EncodingBlock(X)

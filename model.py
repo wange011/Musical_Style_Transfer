@@ -9,27 +9,35 @@ def EncodingBlock(X):
 
     """
 
-    # Kernel with height for 2 octaves
+    # Kernel with height for 2 octaves, resultant shape: (batch_size, filters = 96, new_rows = 63, new_cols = timesteps)
     conv1 = tf.keras.layers.Conv2D(filters=96, kernel_size=(15, 2), strides=(1, 2), padding="valid", activation=tf.nn.relu)(X)
-    # Pool each beat together
-    pool1 = tf.keras.layers.MaxPool2D(pool_size=(4, 4))(conv1)
-    # Kernel with height for 1 octave
+    
+    # Pool each beat together, resultant shape: (batch_size, channels = 96, pooled_rows = 16, pooled_cols = timesteps / 4)
+    pool1 = tf.keras.layers.MaxPool2D(pool_size=(4, 4), padding="same", data_format="channels_first")(conv1)
+    
+    # Kernel with height for 1 octave, resultant shape: (batch_size, filters = 256, new_rows = 9, new_cols = timesteps / 8)
     conv2 = tf.keras.layers.Conv2D(filters=256, kernel_size=(7, 2), strides=(1, 2), padding="valid", activation=tf.nn.relu)(pool1)
-    # Pool each measure together
-    pool2 = tf.keras.layers.MaxPool2D(pool_size=(4, 4))(conv2)
-    # unfold = Unfold(scope='unfold')(pool2)
-    output = tf.layers.Dense(2048, activation=tf.nn.relu)
+    
+    # Pool each measure together, resultant shape: (batch_size, channels = 256, pooled_rows = 4, pooled_cols = timesteps / 16)
+    pool2 = tf.keras.layers.MaxPool2D(pool_size=(2, 2), padding="valid", data_format="channels_first")(conv2)
+    
+    unfold = Unfold(scope='unfold')(pool2)
+    output = tf.layers.Dense(2048, activation=tf.nn.relu)(unfold)
 
     return output
 
 def DecodingBlock(z):
 
     decoded = tf.layers.Dense()
-    # fold = Fold([-1, 7, 7, 32], scope='fold')(decoded)
-    unpool1 = UnPooling((2, 2), output_shape=tf.shape(conv2), scope='unpool_1')(fold)
-    deconv1 = DeConvolution2D([5, 5, 32, 32], output_shape=tf.shape(pool1), activation=tf.nn.relu, scope='deconv_1')(unpool1)
-    unpool2 = UnPooling((2, 2), output_shape=tf.shape(conv1), scope='unpool_2')(deconv1)
-    output = DeConvolution2D([5, 5, 1, 32], output_shape=tf.shape(x), activation=tf.nn.sigmoid, scope='deconv_2')(unpool2)
+    fold = Fold([-1, 7, 7, 32], scope='fold')(decoded)
+    
+    unpool1 = tf.keras.layers.UpSampling2D()(fold)
+    
+    deconv1 = tf.keras.layers.Conv2DTranspose()(unpool1)
+    
+    unpool2 = tf.keras.layers.UpSampling2D()(deconv1)
+    
+    output = tf.keras.layers.Conv2DTranspose()(unpool2)
 
     return output
 
