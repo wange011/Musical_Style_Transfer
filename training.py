@@ -2,8 +2,11 @@ import tensorflow as tf
 
 import numpy as np
 
+import os
+import utility
+
 def train(model_name, training_set, X, output, loss, train_op, training_parameters):
-	working_directory = os.getcwd()
+    working_directory = os.getcwd()
     
     timesteps = training_parameters["timesteps"]
     batch_size = training_parameters["batch_size"]

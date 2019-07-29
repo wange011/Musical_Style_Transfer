@@ -21,8 +21,12 @@ def EncodingBlock(X, batch_size, timesteps):
     # Pool each measure together, resultant shape: (batch_size, channels = 256, pooled_rows = 5, pooled_cols = timesteps / 16)
     pool2 = tf.keras.layers.MaxPool2D(pool_size=(2, 2), padding="same", data_format="channels_first")(conv2)
     
+        
+    unfold_dim = tf.cast(256 * 5 * timesteps / 16, tf.int32)
+   
+    
     # Unfolds the image representation of the piece to a 1D tensor
-    unfold = tf.reshape(pool2, [batch_size, 256 * 5 * timesteps / 16])
+    unfold = tf.reshape(pool2, [batch_size, unfold_dim])
 
     # Outputs in shape (batch_size, latent_vector_dim = 2048)
     output = tf.layers.Dense(2048, activation=tf.nn.relu)(unfold)
@@ -35,7 +39,7 @@ def DecodingBlock(z, batch_size, timesteps):
     decoded = tf.layers.Dense(256 * 5 * timesteps / 16, activation=tf.nn.relu)(z)
 
     # Refolds the image representation, resultant shape: (batch_size, channels = 256, pooled_rows = 5, pooled_cols = timesteps / 16)
-    fold = tf.reshape(decoded, [batch_size, 256, 5, timesteps / 16])
+    fold = tf.reshape(decoded, [batch_size, 256, 5, tf.cast(timesteps / 16, tf.int32)])
 
     # Unpools, resultant shape: (batch_size, channels = 256, pooled_rows = 10, pooled_cols = timesteps / 8)   
     unpool1 = tf.keras.layers.UpSampling2D(size=(2, 2), data_format="channels_first")(fold)
@@ -44,7 +48,7 @@ def DecodingBlock(z, batch_size, timesteps):
     upconv1 = tf.keras.layers.Conv2DTranspose(filters=96, kernel_size=(7, 2), strides=(1, 2), padding="valid", data_format="channels_first", activation=tf.nn.relu)(unpool1)
     
     # Unpools, resultant shape: (batch_size, channels = 96, pooled_rows = 64, pooled_cols = timesteps)
-    unpool2 = tf.keras.layers.UpSampling2D(size=(4, 4), data_format="channels_first")(deconv1)
+    unpool2 = tf.keras.layers.UpSampling2D(size=(4, 4), data_format="channels_first")(upconv1)
     
     # Upconvolves, resultant shape: (batch_size, filters = 1, new_rows = 78, new_cols = timesteps * 2)
     output = tf.keras.layers.Conv2DTranspose(filters=1, kernel_size=(15, 2), strides=(1, 2), padding="valid", data_format="channels_first", activation=tf.nn.relu)(unpool2)

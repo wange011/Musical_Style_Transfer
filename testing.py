@@ -2,17 +2,15 @@ import tensorflow as tf
 
 import numpy as np
 
+import utility
+
 def train(model_name, testing_set, X, output, loss, train_op, training_parameters):
-	working_directory = os.getcwd()
     
     timesteps = training_parameters["timesteps"]
     batch_size = training_parameters["batch_size"]
         
     # Initialize the variables for the computational graph
     init = tf.global_variables_initializer()
-    
-    # Add ops to save and restore all the variables.
-    saver = tf.train.Saver()
     
     file = open("testing_accuracy.txt","w")    
     

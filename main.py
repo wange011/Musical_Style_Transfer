@@ -8,7 +8,7 @@ import testing
 
 working_directory = os.getcwd()
 
-# MIDI files are first converted to a noteStateMatrix
+# MIDI files are converted to a noteStateMatrix
 
 """
 Note State:
@@ -20,16 +20,20 @@ Dimension 3: Articulation (1 denotes the note was played at the given timestep),
 """
 
 # Gather the training pieces from the specified directories
-# Converts the pieces from noteStateMatrix to the biaxialInputFormat
 training_set, testing_set = utility.loadPianoPieces()
+
+# Training parameters
+model_name = "ConvolutionalAutoencoder"
+timesteps = 128
+batch_size = 10
+num_notes = 78
+steps = 80000
+display_step = 1000
+
 
 tf.reset_default_graph()
 
-num_notes = 78
-X = tf.variable(float, [None, 1, num_notes, None])
-
-batch_size = tf.shape(X)[0]
-timesteps = tf.shape(X)[3] / 2
+X = tf.placeholder("float", [None, 1, num_notes, timesteps * 2])
 
 z = model.EncodingBlock(X, batch_size, timesteps)
 output = model.DecodingBlock(z, batch_size, timesteps)
@@ -40,12 +44,6 @@ loss = tf.nn.l2_loss(X - output)
 optimizer = tf.train.AdamOptimizer()
 train_op = optimizer.minimize(loss)
 
-# Training parameters
-model_name = "ConvolutionalAutoencoder"
-timesteps = 128
-batch_size = 10
-steps = 80000
-display_step = 1000
 
 # Training the model
 training_parameters = {"timesteps": timesteps, "batch_size": batch_size, "training_steps": steps, "display_step": display_step}
@@ -54,4 +52,4 @@ training.train(model_name, training_set, X, output, loss, train_op, training_par
 
 
 # Test the model
-training.train(model_name, testing_set, X, output, loss, train_op, training_parameters)
+testing.test(model_name, testing_set, X, output, loss, train_op, training_parameters)
