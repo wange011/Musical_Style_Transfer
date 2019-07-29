@@ -26,7 +26,7 @@ training_set, testing_set = utility.loadPianoPieces()
 tf.reset_default_graph()
 
 num_notes = 78
-X = tf.variable(float, [None, 1, num_notes, None])
+X = tf.placeholder("float", [None, 1, num_notes, None])
 
 batch_size = tf.shape(X)[0]
 timesteps = tf.shape(X)[3] / 2
