@@ -4,6 +4,7 @@ import os
 import utility
 import model
 import training
+import testing
 
 working_directory = os.getcwd()
 
@@ -27,9 +28,11 @@ tf.reset_default_graph()
 num_notes = 78
 X = tf.variable(float, [None, 1, num_notes, None])
 
+batch_size = tf.shape(X)[0]
+timesteps = tf.shape(X)[3] / 2
 
-z = model.EncodingBlock(X)
-output = model.DecodingBlock(z)
+z = model.EncodingBlock(X, batch_size, timesteps)
+output = model.DecodingBlock(z, batch_size, timesteps)
 
 
 # Potentially use a regularizer 
@@ -48,3 +51,7 @@ display_step = 1000
 training_parameters = {"timesteps": timesteps, "batch_size": batch_size, "training_steps": steps, "display_step": display_step}
 
 training.train(model_name, training_set, X, output, loss, train_op, training_parameters)
+
+
+# Test the model
+training.train(model_name, testing_set, X, output, loss, train_op, training_parameters)

@@ -7,7 +7,6 @@ import tensorflow as tf
 import model
 
 training_set, testing_set = utility.loadPianoPieces()
-scales = utility.loadScales()   
 
 tf.reset_default_graph()
 
@@ -24,6 +23,14 @@ loss = tf.nn.l2_loss(X - output)
 optimizer = tf.train.AdamOptimizer()
 train_op = optimizer.minimize(loss)
 
+# Hyperparameters
+steps_trained = 
+timesteps = 
+training_steps = 
+
+training_set = utility.generateBatches(training_set, 1, timesteps)
+
+
 with tf.Session() as sess:
         
         saver.restore(sess, working_directory + "/saved_models/" + model_name + "_" + str(steps_trained) + "_iterations.ckpt")
@@ -39,7 +46,7 @@ with tf.Session() as sess:
             # Code for X
 
             # Evaluate the computational graph
-            loss_run, outputs_run, _, = sess.run([loss, outputs, train_op], feed_dict={X: x})                
+            z_run = sess.run([z], feed_dict={X: x})                
             
             # Each display_step iterations, save the model and generate outputs
             if step % display_step == 0:

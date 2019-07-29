@@ -23,12 +23,6 @@ def loadPianoPieces():
         index = random.choice(list(training.keys()))
         testing[index] = training.pop(index)
     
-    for key in training.keys():
-        training[key] = noteStateToBiaxialInput(training[key])
-
-    for key in testing.keys():
-        testing[key] = noteStateToBiaxialInput(testing[key])    
-    
     return training, testing
 
 def loadScales():
