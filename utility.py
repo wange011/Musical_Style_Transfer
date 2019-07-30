@@ -34,9 +34,6 @@ def loadScales():
 
     scales = {**scales, **loadPieces(music_directory, max_time_steps)}
     
-    for key in scales.keys():
-        scales[key] = noteStateToBiaxialInput(scales[key])
-    
     return scales
 
 def loadPieces(dirpath, max_time_steps):

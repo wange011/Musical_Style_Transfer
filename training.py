@@ -6,6 +6,7 @@ import os
 import utility
 
 def train(model_name, training_set, X, output, loss, train_op, training_parameters):
+
     working_directory = os.getcwd()
     
     timesteps = training_parameters["timesteps"]
@@ -45,7 +46,7 @@ def train(model_name, training_set, X, output, loss, train_op, training_paramete
             x = np.reshape(x, (batch_size, 1, 78, timesteps * 2))
 
             # Evaluate the computational graph
-            loss_run, outputs_run, _, = sess.run([loss, outputs, train_op], feed_dict={X: x})                
+            loss_run, outputs_run, _, = sess.run([loss, output, train_op], feed_dict={X: x})                
             
             # Each display_step iterations, save the model and generate outputs
             if step % display_step == 0:

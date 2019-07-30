@@ -30,7 +30,6 @@ num_notes = 78
 steps = 80000
 display_step = 1000
 
-
 tf.reset_default_graph()
 
 X = tf.placeholder("float", [None, 1, num_notes, timesteps * 2])

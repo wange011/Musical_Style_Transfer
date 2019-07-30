@@ -35,7 +35,7 @@ def train(model_name, testing_set, X, output, loss, train_op, training_parameter
             x = np.reshape(x, (batch_size, 1, 78, timesteps * 2))
 
             # Evaluate the computational graph
-            loss_run, outputs_run = sess.run([loss, outputs], feed_dict={X: x})                
+            loss_run, outputs_run = sess.run([loss, output], feed_dict={X: x})                
             
             # Each display_step iterations, save the model and generate outputs
             if step % 5 == 0:
