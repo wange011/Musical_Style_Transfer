@@ -4,7 +4,7 @@ import numpy as np
 
 import utility
 
-def train(model_name, testing_set, X, output, loss, train_op, training_parameters):
+def test(model_name, testing_set, X, output, loss, train_op, training_parameters):
     
     timesteps = training_parameters["timesteps"]
     batch_size = training_parameters["batch_size"]

@@ -27,7 +27,7 @@ model_name = "ConvolutionalAutoencoder"
 timesteps = 128
 batch_size = 10
 num_notes = 78
-steps = 80000
+steps = 800000
 display_step = 1000
 
 tf.reset_default_graph()
@@ -39,7 +39,7 @@ output = model.DecodingBlock(z, batch_size, timesteps)
 
 
 # Potentially use a regularizer 
-loss = tf.nn.l2_loss(X - output)
+loss = model.vae_loss(output, X)
 optimizer = tf.train.AdamOptimizer()
 train_op = optimizer.minimize(loss)
 

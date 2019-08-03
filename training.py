@@ -54,18 +54,19 @@ def train(model_name, training_set, X, output, loss, train_op, training_paramete
                 # Saves the model            
                 saver.save(sess, working_directory + "/saved_models/" + model_name + "_" + str(step) + "_iterations.ckpt")            
             	
+                if step % (display_step / 100000) == 0:
 
+                    # Output the reconstructed piece
+                    # Maybe use a validation set
 
-                # Output the reconstructed piece
-                # Maybe use a validation set
+                    # Reshapes the output to the piano roll format
+                    outputs_run = np.reshape(outputs_run, (batch_size, 1, 78, timesteps, 2))
+                    outputs_run = np.transpose(outputs_run, (0, 1, 3, 2, 4))
+                    outputs_run = np.reshape(outputs_run, (batch_size, timesteps, 78, 2))
 
-                # Reshapes the output to the piano roll format
-                outputs_run = np.reshape(outputs_run, (batch_size, 1, 78, timesteps, 2))
-                outputs_run = np.transpose(outputs_run, (0, 1, 3, 2, 4))
-                outputs_run = np.reshape(outputs_run, (batch_size, timesteps, 78, 2))
-
-                for j in range(len(outputs_run)):
-                    utility.generateMIDI(outputs_run[j], model_name + "_" + str(step) + "_iterations_" + str(j + 1))
+                    # Remove some outputs
+                    for j in range(len(outputs_run)):
+                        utility.generateMIDI(outputs_run[j], model_name + "_" + str(step) + "_iterations_" + str(j + 1))
 
                 # Calculate batch loss and accuracy
                 print("Step " + str(step) + ", Loss= " + str(loss_run))
