@@ -39,7 +39,7 @@ output = model.DecodingBlock(z, batch_size, timesteps)
 
 
 # Potentially use a regularizer 
-loss = model.vae_loss(output, X)
+loss = tf.nn.l2_loss(X - output)
 optimizer = tf.train.AdamOptimizer()
 train_op = optimizer.minimize(loss)
 
